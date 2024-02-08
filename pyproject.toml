@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=61.0", "torch>=1.1", "numpy"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name='pcdet'
+description='OpenPCDet is a general codebase for 3D object detection from point cloud'
+requires-python = ">=3.10"
+dynamic = ["dependencies", "version", "license", "authors"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
