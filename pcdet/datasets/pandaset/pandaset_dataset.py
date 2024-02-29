@@ -346,7 +346,7 @@ class PandasetDataset(DatasetTemplate):
                 frame_id = str(int(frame_idx)).zfill(2)
                 seq_id = str(int(seq_idx)).zfill(3)
                 cur_det_file = os.path.join(output_path, seq_id, 'predictions',
-                                            'cuboids', ("{}.pkl".format(frame_id)))
+                                            'cuboids', ("{}.pkl.gz".format(frame_id)))
                 os.makedirs(os.path.dirname(cur_det_file), exist_ok=True)
                 single_pred_df.to_pickle(cur_det_file)
 
@@ -373,9 +373,9 @@ class PandasetDataset(DatasetTemplate):
                                  "no longer than 100 frames. The current sequence has {}".format(len(s.lidar.data)))
             info = [{'sequence': seq,
                      'frame_idx': ii,
-                     'lidar_path': os.path.join(self.root_path, seq, 'lidar', ("{:02d}.pkl".format(ii))),
+                     'lidar_path': os.path.join(self.root_path, seq, 'lidar', ("{:02d}.pkl.gz".format(ii))),
                      'cuboids_path': os.path.join(self.root_path, seq,
-                                                  'annotations', 'cuboids', ("{:02d}.pkl".format(ii)))
+                                                  'annotations', 'cuboids', ("{:02d}.pkl.gz".format(ii)))
                     } for ii in range(len(s.lidar.data))]
             infos.extend(info)
             del self.dataset._sequences[seq]
