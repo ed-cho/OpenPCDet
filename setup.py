@@ -1,8 +1,36 @@
 import os
 import subprocess
-
+import json
+from pathlib import Path
+import platform
 from setuptools import find_packages, setup
+
 from torch.utils.cpp_extension import BuildExtension, CUDAExtension
+
+CUDA_VERSION_JSON = Path("/usr/local/cuda/version.json")
+
+def get_spconv_version():
+    if CUDA_VERSION_JSON.is_file():
+        # Read cuda version as integer (11.7.1 --> 117, 12.1.1 --> 121, etc.)
+        with open(CUDA_VERSION_JSON, "r") as file:
+            data = json.load(file)
+        cuda_version = int("".join(data["cuda"]["version"].split('.')[:2]))
+        
+        # Assign correct spconv 
+        if cuda_version < 113:
+            raise ValueError("Please install CUDA >= 11.3. It is recommended to use >= 11.4 if possible")
+        elif cuda_version == 115:
+            spconv_version = f"spconv-cu114"
+        elif cuda_version >= 120:
+            spconv_version = f"spconv-cu120"
+        else:
+            spconv_version = f"spconv-cu{cuda_version}"
+    else:
+        if platform.system() == 'Linux':
+            spconv_version = "spconv"
+        else:
+            raise ValueError(f"CPU version of spconv is only available in LINUX. Please install CUDA toolkit >= 11.3")
+    return spconv_version
 
 
 def get_git_commit_number():
@@ -36,7 +64,6 @@ if __name__ == '__main__':
         version=version,
         description='OpenPCDet is a general codebase for 3D object detection from point cloud',
         install_requires=[
-            'torch',
             'numpy',
             'llvmlite',
             'numba',
@@ -45,8 +72,12 @@ if __name__ == '__main__':
             'pyyaml',
             'scikit-image',
             'tqdm',
-            'SharedArray',
-            # 'spconv',  # spconv has different names depending on the cuda version
+            'torch',
+            'torchvision',
+            'SharedArray==3.1.0',
+            'opencv-python',
+            'pyquaternion',
+            get_spconv_version()
         ],
 
         author='Shaoshuai Shi',
