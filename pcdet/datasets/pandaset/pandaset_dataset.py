@@ -15,6 +15,7 @@ from ..dataset import DatasetTemplate
 from ...ops.roiaware_pool3d import roiaware_pool3d_utils
 
 import torch
+import tqdm
 
 
 def pose_dict_to_numpy(pose):
@@ -365,7 +366,7 @@ class PandasetDataset(DatasetTemplate):
             - the path to the bounding box annotations
         """
         infos = []
-        for seq in self.sequences:
+        for seq in tqdm.tqdm(self.sequences):
             s = self.dataset[seq]
             s.load_lidar()
             if len(s.lidar.data) > 100:
